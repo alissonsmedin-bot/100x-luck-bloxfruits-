@@ -1,27 +1,51 @@
--- FAKE LUCK MENU — SOMENTE VISUAL
--- Não altera Blox Fruits nem qualquer mecânica do jogo.
+--[[
+    💥 FAKE LUCK HUB
+    SOMENTE VISUAL
+    Não altera Blox Fruits nem suas mecânicas.
+]]
 
 local Players = game:GetService("Players")
-local player = Players.LocalPlayer
 local UIS = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+
+local player = Players.LocalPlayer
+
+-- =========================================================
+-- GUI
+-- =========================================================
 
 local gui = Instance.new("ScreenGui")
-gui.Name = "FakeLuckMenu"
+gui.Name = "FakeLuckHub"
 gui.ResetOnSpawn = false
 gui.Parent = player:WaitForChild("PlayerGui")
 
--- =========================
+-- =========================================================
+-- CONFIGURAÇÕES
+-- =========================================================
+
+local Colors = {
+    Verde = Color3.fromRGB(60, 255, 100),
+    Amarelo = Color3.fromRGB(255, 220, 50),
+    Azul = Color3.fromRGB(60, 150, 255)
+}
+
+local currentColor = Colors.Verde
+local neonMode = false
+
+-- =========================================================
 -- LOGO
--- =========================
+-- =========================================================
 
 local logo = Instance.new("TextButton")
-logo.Name = "Logo"
-logo.Size = UDim2.new(0, 55, 0, 55)
-logo.Position = UDim2.new(0, 25, 0.5, -25)
-logo.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
+logo.Name = "FloatingLogo"
+logo.Size = UDim2.new(0, 58, 0, 58)
+logo.Position = UDim2.new(0, 25, 0.5, -29)
+
+logo.BackgroundColor3 = Color3.fromRGB(18, 18, 23)
 logo.Text = "💥"
 logo.TextSize = 30
 logo.Font = Enum.Font.GothamBold
+logo.AutoButtonColor = false
 logo.Parent = gui
 
 local logoCorner = Instance.new("UICorner")
@@ -29,110 +53,251 @@ logoCorner.CornerRadius = UDim.new(1, 0)
 logoCorner.Parent = logo
 
 local logoStroke = Instance.new("UIStroke")
-logoStroke.Thickness = 2
-logoStroke.Color = Color3.fromRGB(255, 80, 80)
+logoStroke.Thickness = 3
+logoStroke.Color = currentColor
 logoStroke.Parent = logo
 
--- =========================
+-- =========================================================
 -- MENU
--- =========================
+-- =========================================================
 
 local menu = Instance.new("Frame")
-menu.Name = "LuckMenu"
-menu.Size = UDim2.new(0, 270, 0, 300)
-menu.Position = UDim2.new(0.5, -135, 0.5, -150)
-menu.BackgroundColor3 = Color3.fromRGB(15, 15, 20)
+menu.Name = "MainMenu"
+menu.Size = UDim2.new(0, 285, 0, 395)
+menu.Position = UDim2.new(0.5, -142, 0.5, -197)
+
+menu.BackgroundColor3 = Color3.fromRGB(13, 13, 18)
 menu.Visible = false
 menu.Parent = gui
 
 local menuCorner = Instance.new("UICorner")
-menuCorner.CornerRadius = UDim.new(0, 14)
+menuCorner.CornerRadius = UDim.new(0, 15)
 menuCorner.Parent = menu
 
 local menuStroke = Instance.new("UIStroke")
 menuStroke.Thickness = 2
-menuStroke.Color = Color3.fromRGB(255, 70, 70)
+menuStroke.Color = currentColor
 menuStroke.Parent = menu
 
--- =========================
+-- =========================================================
 -- TÍTULO
--- =========================
+-- =========================================================
 
 local title = Instance.new("TextLabel")
 title.Size = UDim2.new(1, 0, 0, 55)
 title.BackgroundTransparency = 1
-title.Text = "💥  LUCK BOOST"
+title.Text = "💥  LUCK HUB"
 title.TextColor3 = Color3.fromRGB(255, 255, 255)
 title.TextSize = 22
 title.Font = Enum.Font.GothamBold
 title.Parent = menu
 
--- =========================
+-- =========================================================
 -- STATUS
--- =========================
+-- =========================================================
 
 local status = Instance.new("TextLabel")
-status.Size = UDim2.new(1, -30, 0, 35)
-status.Position = UDim2.new(0, 15, 0, 55)
+status.Size = UDim2.new(1, -30, 0, 32)
+status.Position = UDim2.new(0, 15, 0, 50)
+
 status.BackgroundTransparency = 1
 status.Text = "Current Luck: 1x"
-status.TextColor3 = Color3.fromRGB(180, 180, 180)
-status.TextSize = 16
+status.TextColor3 = Color3.fromRGB(180, 180, 185)
+status.TextSize = 15
 status.Font = Enum.Font.Gotham
 status.Parent = menu
 
--- =========================
--- BOTÕES
--- =========================
+-- =========================================================
+-- SEPARADOR
+-- =========================================================
 
-local function createButton(text, y, multiplier)
+local function createSection(text, y)
+
+    local section = Instance.new("TextLabel")
+
+    section.Size = UDim2.new(1, -30, 0, 25)
+    section.Position = UDim2.new(0, 15, 0, y)
+
+    section.BackgroundTransparency = 1
+    section.Text = text
+    section.TextColor3 = currentColor
+
+    section.TextSize = 14
+    section.Font = Enum.Font.GothamBold
+    section.TextXAlignment = Enum.TextXAlignment.Left
+
+    section.Parent = menu
+
+    return section
+end
+
+createSection("LUCK", 82)
+
+-- =========================================================
+-- BOTÃO PADRÃO
+-- =========================================================
+
+local function createButton(text, y, callback)
 
     local button = Instance.new("TextButton")
 
-    button.Size = UDim2.new(1, -40, 0, 50)
+    button.Size = UDim2.new(1, -40, 0, 42)
     button.Position = UDim2.new(0, 20, 0, y)
 
-    button.BackgroundColor3 = Color3.fromRGB(30, 30, 38)
-    button.Text = text
+    button.BackgroundColor3 = Color3.fromRGB(27, 27, 34)
 
-    button.TextColor3 = Color3.fromRGB(255, 255, 255)
-    button.TextSize = 17
+    button.Text = text
+    button.TextColor3 = Color3.fromRGB(245, 245, 245)
+
+    button.TextSize = 15
     button.Font = Enum.Font.GothamBold
 
+    button.AutoButtonColor = false
     button.Parent = menu
 
     local corner = Instance.new("UICorner")
-    corner.CornerRadius = UDim.new(0, 10)
+    corner.CornerRadius = UDim.new(0, 9)
     corner.Parent = button
 
     local stroke = Instance.new("UIStroke")
     stroke.Thickness = 1
-    stroke.Color = Color3.fromRGB(70, 70, 80)
+    stroke.Color = Color3.fromRGB(65, 65, 75)
     stroke.Parent = button
 
-    button.MouseButton1Click:Connect(function()
-
-        status.Text = "Current Luck: " .. multiplier .. "x"
-
-        -- Apenas efeito visual
-        button.Text = "✓  " .. multiplier .. "x LUCK"
-
-        task.wait(0.7)
-
-        button.Text = text
-
+    button.MouseEnter:Connect(function()
+        button.BackgroundColor3 = Color3.fromRGB(38, 38, 48)
     end)
+
+    button.MouseLeave:Connect(function()
+        button.BackgroundColor3 = Color3.fromRGB(27, 27, 34)
+    end)
+
+    button.MouseButton1Click:Connect(callback)
 
     return button
 end
 
-createButton("10x Luck", 100, 10)
-createButton("100x Luck", 160, 100)
-createButton("1000x Luck", 220, 1000)
+-- =========================================================
+-- LUCK
+-- =========================================================
 
--- =========================
+createButton("10x Luck", 112, function()
+
+    status.Text = "Current Luck: 10x"
+    status.TextColor3 = currentColor
+
+end)
+
+createButton("100x Luck", 160, function()
+
+    status.Text = "Current Luck: 100x"
+    status.TextColor3 = currentColor
+
+end)
+
+createButton("1000x Luck", 208, function()
+
+    status.Text = "Current Luck: 1000x"
+    status.TextColor3 = currentColor
+
+end)
+
+-- =========================================================
+-- CONFIGURAÇÃO
+-- =========================================================
+
+createSection("CONFIGURAÇÃO", 262)
+
+-- =========================================================
+-- FUNÇÃO PARA ATUALIZAR COR
+-- =========================================================
+
+local function updateColor(color)
+
+    currentColor = color
+
+    logoStroke.Color = color
+    menuStroke.Color = color
+
+    for _, object in ipairs(menu:GetChildren()) do
+
+        if object:IsA("TextLabel") then
+
+            if object.Text == "LUCK"
+            or object.Text == "CONFIGURAÇÃO" then
+
+                object.TextColor3 = color
+
+            elseif object.Text == "Current Luck: 1x"
+            or object.Text == "Current Luck: 10x"
+            or object.Text == "Current Luck: 100x"
+            or object.Text == "Current Luck: 1000x" then
+
+                object.TextColor3 = color
+
+            end
+
+        end
+
+    end
+
+end
+
+-- =========================================================
+-- CORES
+-- =========================================================
+
+createButton("🟢  Verde", 290, function()
+
+    updateColor(Colors.Verde)
+
+end)
+
+createButton("🟡  Amarelo", 338, function()
+
+    updateColor(Colors.Amarelo)
+
+end)
+
+-- =========================================================
+-- BOTÃO AZUL
+-- =========================================================
+
+local blueButton = createButton("🔵  Azul", 386, function()
+
+    updateColor(Colors.Azul)
+
+end)
+
+-- =========================================================
+-- NEON
+-- =========================================================
+
+local neonButton = createButton("⚡  Neon: OFF", 434, function()
+
+    neonMode = not neonMode
+
+    if neonMode then
+
+        neonButton.Text = "⚡  Neon: ON"
+
+        logoStroke.Thickness = 5
+        menuStroke.Thickness = 3
+
+    else
+
+        neonButton.Text = "⚡  Neon: OFF"
+
+        logoStroke.Thickness = 3
+        menuStroke.Thickness = 2
+
+    end
+
+end)
+
+-- =========================================================
 -- ABRIR / FECHAR
--- =========================
+-- =========================================================
 
 logo.MouseButton1Click:Connect(function()
 
@@ -140,13 +305,22 @@ logo.MouseButton1Click:Connect(function()
 
 end)
 
--- =========================
--- ARRASTAR LOGO
--- =========================
+-- =========================================================
+-- ARRASTO SUAVE DA LOGO
+-- =========================================================
 
 local draggingLogo = false
 local dragStart
-local startPos
+local targetLogoPosition
+
+local function getMousePosition(input)
+
+    return Vector2.new(
+        input.Position.X,
+        input.Position.Y
+    )
+
+end
 
 logo.InputBegan:Connect(function(input)
 
@@ -154,8 +328,9 @@ logo.InputBegan:Connect(function(input)
     or input.UserInputType == Enum.UserInputType.Touch then
 
         draggingLogo = true
-        dragStart = input.Position
-        startPos = logo.Position
+
+        dragStart = getMousePosition(input)
+        targetLogoPosition = logo.Position
 
     end
 
@@ -174,30 +349,58 @@ end)
 
 UIS.InputChanged:Connect(function(input)
 
-    if draggingLogo and
-    (input.UserInputType == Enum.UserInputType.MouseMovement
-    or input.UserInputType == Enum.UserInputType.Touch) then
+    if not draggingLogo then
+        return
+    end
 
-        local delta = input.Position - dragStart
+    if input.UserInputType ~= Enum.UserInputType.MouseMovement
+    and input.UserInputType ~= Enum.UserInputType.Touch then
+        return
+    end
+
+    local current = getMousePosition(input)
+    local delta = current - dragStart
+
+    targetLogoPosition = UDim2.new(
+        targetLogoPosition.X.Scale,
+        targetLogoPosition.X.Offset + delta.X,
+        targetLogoPosition.Y.Scale,
+        targetLogoPosition.Y.Offset + delta.Y
+    )
+
+    dragStart = current
+
+end)
+
+-- =========================================================
+-- MOVIMENTO SUAVE
+-- =========================================================
+
+RunService.RenderStepped:Connect(function()
+
+    if targetLogoPosition then
+
+        local current = logo.Position
 
         logo.Position = UDim2.new(
-            startPos.X.Scale,
-            startPos.X.Offset + delta.X,
-            startPos.Y.Scale,
-            startPos.Y.Offset + delta.Y
+            current.X.Scale,
+            current.X.Offset + (targetLogoPosition.X.Offset - current.X.Offset) * 0.25,
+
+            current.Y.Scale,
+            current.Y.Offset + (targetLogoPosition.Y.Offset - current.Y.Offset) * 0.25
         )
 
     end
 
 end)
 
--- =========================
--- ARRASTAR MENU
--- =========================
+-- =========================================================
+-- ARRASTO SUAVE DO MENU PELO TÍTULO
+-- =========================================================
 
 local draggingMenu = false
-local menuStart
-local menuPos
+local menuDragStart
+local targetMenuPosition
 
 title.InputBegan:Connect(function(input)
 
@@ -205,8 +408,9 @@ title.InputBegan:Connect(function(input)
     or input.UserInputType == Enum.UserInputType.Touch then
 
         draggingMenu = true
-        menuStart = input.Position
-        menuPos = menu.Position
+
+        menuDragStart = getMousePosition(input)
+        targetMenuPosition = menu.Position
 
     end
 
@@ -225,17 +429,42 @@ end)
 
 UIS.InputChanged:Connect(function(input)
 
-    if draggingMenu and
-    (input.UserInputType == Enum.UserInputType.MouseMovement
-    or input.UserInputType == Enum.UserInputType.Touch) then
+    if not draggingMenu then
+        return
+    end
 
-        local delta = input.Position - menuStart
+    if input.UserInputType ~= Enum.UserInputType.MouseMovement
+    and input.UserInputType ~= Enum.UserInputType.Touch then
+        return
+    end
+
+    local current = getMousePosition(input)
+    local delta = current - menuDragStart
+
+    targetMenuPosition = UDim2.new(
+        targetMenuPosition.X.Scale,
+        targetMenuPosition.X.Offset + delta.X,
+
+        targetMenuPosition.Y.Scale,
+        targetMenuPosition.Y.Offset + delta.Y
+    )
+
+    menuDragStart = current
+
+end)
+
+RunService.RenderStepped:Connect(function()
+
+    if targetMenuPosition then
+
+        local current = menu.Position
 
         menu.Position = UDim2.new(
-            menuPos.X.Scale,
-            menuPos.X.Offset + delta.X,
-            menuPos.Y.Scale,
-            menuPos.Y.Offset + delta.Y
+            current.X.Scale,
+            current.X.Offset + (targetMenuPosition.X.Offset - current.X.Offset) * 0.25,
+
+            current.Y.Scale,
+            current.Y.Offset + (targetMenuPosition.Y.Offset - current.Y.Offset) * 0.25
         )
 
     end
