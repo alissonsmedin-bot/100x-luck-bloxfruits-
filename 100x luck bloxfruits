@@ -1,0 +1,243 @@
+-- FAKE LUCK MENU — SOMENTE VISUAL
+-- Não altera Blox Fruits nem qualquer mecânica do jogo.
+
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+local UIS = game:GetService("UserInputService")
+
+local gui = Instance.new("ScreenGui")
+gui.Name = "FakeLuckMenu"
+gui.ResetOnSpawn = false
+gui.Parent = player:WaitForChild("PlayerGui")
+
+-- =========================
+-- LOGO
+-- =========================
+
+local logo = Instance.new("TextButton")
+logo.Name = "Logo"
+logo.Size = UDim2.new(0, 55, 0, 55)
+logo.Position = UDim2.new(0, 25, 0.5, -25)
+logo.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
+logo.Text = "💥"
+logo.TextSize = 30
+logo.Font = Enum.Font.GothamBold
+logo.Parent = gui
+
+local logoCorner = Instance.new("UICorner")
+logoCorner.CornerRadius = UDim.new(1, 0)
+logoCorner.Parent = logo
+
+local logoStroke = Instance.new("UIStroke")
+logoStroke.Thickness = 2
+logoStroke.Color = Color3.fromRGB(255, 80, 80)
+logoStroke.Parent = logo
+
+-- =========================
+-- MENU
+-- =========================
+
+local menu = Instance.new("Frame")
+menu.Name = "LuckMenu"
+menu.Size = UDim2.new(0, 270, 0, 300)
+menu.Position = UDim2.new(0.5, -135, 0.5, -150)
+menu.BackgroundColor3 = Color3.fromRGB(15, 15, 20)
+menu.Visible = false
+menu.Parent = gui
+
+local menuCorner = Instance.new("UICorner")
+menuCorner.CornerRadius = UDim.new(0, 14)
+menuCorner.Parent = menu
+
+local menuStroke = Instance.new("UIStroke")
+menuStroke.Thickness = 2
+menuStroke.Color = Color3.fromRGB(255, 70, 70)
+menuStroke.Parent = menu
+
+-- =========================
+-- TÍTULO
+-- =========================
+
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, 0, 0, 55)
+title.BackgroundTransparency = 1
+title.Text = "💥  LUCK BOOST"
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.TextSize = 22
+title.Font = Enum.Font.GothamBold
+title.Parent = menu
+
+-- =========================
+-- STATUS
+-- =========================
+
+local status = Instance.new("TextLabel")
+status.Size = UDim2.new(1, -30, 0, 35)
+status.Position = UDim2.new(0, 15, 0, 55)
+status.BackgroundTransparency = 1
+status.Text = "Current Luck: 1x"
+status.TextColor3 = Color3.fromRGB(180, 180, 180)
+status.TextSize = 16
+status.Font = Enum.Font.Gotham
+status.Parent = menu
+
+-- =========================
+-- BOTÕES
+-- =========================
+
+local function createButton(text, y, multiplier)
+
+    local button = Instance.new("TextButton")
+
+    button.Size = UDim2.new(1, -40, 0, 50)
+    button.Position = UDim2.new(0, 20, 0, y)
+
+    button.BackgroundColor3 = Color3.fromRGB(30, 30, 38)
+    button.Text = text
+
+    button.TextColor3 = Color3.fromRGB(255, 255, 255)
+    button.TextSize = 17
+    button.Font = Enum.Font.GothamBold
+
+    button.Parent = menu
+
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, 10)
+    corner.Parent = button
+
+    local stroke = Instance.new("UIStroke")
+    stroke.Thickness = 1
+    stroke.Color = Color3.fromRGB(70, 70, 80)
+    stroke.Parent = button
+
+    button.MouseButton1Click:Connect(function()
+
+        status.Text = "Current Luck: " .. multiplier .. "x"
+
+        -- Apenas efeito visual
+        button.Text = "✓  " .. multiplier .. "x LUCK"
+
+        task.wait(0.7)
+
+        button.Text = text
+
+    end)
+
+    return button
+end
+
+createButton("10x Luck", 100, 10)
+createButton("100x Luck", 160, 100)
+createButton("1000x Luck", 220, 1000)
+
+-- =========================
+-- ABRIR / FECHAR
+-- =========================
+
+logo.MouseButton1Click:Connect(function()
+
+    menu.Visible = not menu.Visible
+
+end)
+
+-- =========================
+-- ARRASTAR LOGO
+-- =========================
+
+local draggingLogo = false
+local dragStart
+local startPos
+
+logo.InputBegan:Connect(function(input)
+
+    if input.UserInputType == Enum.UserInputType.MouseButton1
+    or input.UserInputType == Enum.UserInputType.Touch then
+
+        draggingLogo = true
+        dragStart = input.Position
+        startPos = logo.Position
+
+    end
+
+end)
+
+logo.InputEnded:Connect(function(input)
+
+    if input.UserInputType == Enum.UserInputType.MouseButton1
+    or input.UserInputType == Enum.UserInputType.Touch then
+
+        draggingLogo = false
+
+    end
+
+end)
+
+UIS.InputChanged:Connect(function(input)
+
+    if draggingLogo and
+    (input.UserInputType == Enum.UserInputType.MouseMovement
+    or input.UserInputType == Enum.UserInputType.Touch) then
+
+        local delta = input.Position - dragStart
+
+        logo.Position = UDim2.new(
+            startPos.X.Scale,
+            startPos.X.Offset + delta.X,
+            startPos.Y.Scale,
+            startPos.Y.Offset + delta.Y
+        )
+
+    end
+
+end)
+
+-- =========================
+-- ARRASTAR MENU
+-- =========================
+
+local draggingMenu = false
+local menuStart
+local menuPos
+
+title.InputBegan:Connect(function(input)
+
+    if input.UserInputType == Enum.UserInputType.MouseButton1
+    or input.UserInputType == Enum.UserInputType.Touch then
+
+        draggingMenu = true
+        menuStart = input.Position
+        menuPos = menu.Position
+
+    end
+
+end)
+
+title.InputEnded:Connect(function(input)
+
+    if input.UserInputType == Enum.UserInputType.MouseButton1
+    or input.UserInputType == Enum.UserInputType.Touch then
+
+        draggingMenu = false
+
+    end
+
+end)
+
+UIS.InputChanged:Connect(function(input)
+
+    if draggingMenu and
+    (input.UserInputType == Enum.UserInputType.MouseMovement
+    or input.UserInputType == Enum.UserInputType.Touch) then
+
+        local delta = input.Position - menuStart
+
+        menu.Position = UDim2.new(
+            menuPos.X.Scale,
+            menuPos.X.Offset + delta.X,
+            menuPos.Y.Scale,
+            menuPos.Y.Offset + delta.Y
+        )
+
+    end
+
+end)
