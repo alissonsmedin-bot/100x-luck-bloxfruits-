@@ -10,38 +10,38 @@ local RunService = game:GetService("RunService")
 
 local player = Players.LocalPlayer
 
--- =========================================================
+--==================================================
 -- GUI
--- =========================================================
+--==================================================
 
 local gui = Instance.new("ScreenGui")
 gui.Name = "FakeLuckHub"
 gui.ResetOnSpawn = false
 gui.Parent = player:WaitForChild("PlayerGui")
 
--- =========================================================
--- CONFIGURAÇÕES
--- =========================================================
+--==================================================
+-- CORES
+--==================================================
 
-local Colors = {
-    Verde = Color3.fromRGB(60, 255, 100),
-    Amarelo = Color3.fromRGB(255, 220, 50),
-    Azul = Color3.fromRGB(60, 150, 255)
+local COLORS = {
+    Verde = Color3.fromRGB(55, 255, 100),
+    Amarelo = Color3.fromRGB(255, 220, 45),
+    Azul = Color3.fromRGB(65, 150, 255)
 }
 
-local currentColor = Colors.Verde
-local neonMode = false
+local currentColor = COLORS.Verde
+local rgbEnabled = false
+local rgbHue = 0
 
--- =========================================================
+--==================================================
 -- LOGO
--- =========================================================
+--==================================================
 
 local logo = Instance.new("TextButton")
-logo.Name = "FloatingLogo"
-logo.Size = UDim2.new(0, 58, 0, 58)
+logo.Size = UDim2.fromOffset(58, 58)
 logo.Position = UDim2.new(0, 25, 0.5, -29)
 
-logo.BackgroundColor3 = Color3.fromRGB(18, 18, 23)
+logo.BackgroundColor3 = Color3.fromRGB(17,17,22)
 logo.Text = "💥"
 logo.TextSize = 30
 logo.Font = Enum.Font.GothamBold
@@ -49,7 +49,7 @@ logo.AutoButtonColor = false
 logo.Parent = gui
 
 local logoCorner = Instance.new("UICorner")
-logoCorner.CornerRadius = UDim.new(1, 0)
+logoCorner.CornerRadius = UDim.new(1,0)
 logoCorner.Parent = logo
 
 local logoStroke = Instance.new("UIStroke")
@@ -57,415 +57,461 @@ logoStroke.Thickness = 3
 logoStroke.Color = currentColor
 logoStroke.Parent = logo
 
--- =========================================================
--- MENU
--- =========================================================
+--==================================================
+-- MAIN FRAME
+--==================================================
 
-local menu = Instance.new("Frame")
-menu.Name = "MainMenu"
-menu.Size = UDim2.new(0, 285, 0, 395)
-menu.Position = UDim2.new(0.5, -142, 0.5, -197)
+local main = Instance.new("Frame")
+main.Size = UDim2.fromOffset(430, 330)
+main.Position = UDim2.new(0.5, -215, 0.5, -165)
 
-menu.BackgroundColor3 = Color3.fromRGB(13, 13, 18)
-menu.Visible = false
-menu.Parent = gui
+main.BackgroundColor3 = Color3.fromRGB(12,12,17)
+main.Visible = false
+main.Parent = gui
 
-local menuCorner = Instance.new("UICorner")
-menuCorner.CornerRadius = UDim.new(0, 15)
-menuCorner.Parent = menu
+local mainCorner = Instance.new("UICorner")
+mainCorner.CornerRadius = UDim.new(0,14)
+mainCorner.Parent = main
 
-local menuStroke = Instance.new("UIStroke")
-menuStroke.Thickness = 2
-menuStroke.Color = currentColor
-menuStroke.Parent = menu
+local mainStroke = Instance.new("UIStroke")
+mainStroke.Thickness = 2
+mainStroke.Color = currentColor
+mainStroke.Parent = main
 
--- =========================================================
--- TÍTULO
--- =========================================================
+--==================================================
+-- SIDEBAR
+--==================================================
+
+local sidebar = Instance.new("Frame")
+sidebar.Size = UDim2.new(0,115,1,0)
+sidebar.BackgroundColor3 = Color3.fromRGB(18,18,24)
+sidebar.BorderSizePixel = 0
+sidebar.Parent = main
+
+local sidebarCorner = Instance.new("UICorner")
+sidebarCorner.CornerRadius = UDim.new(0,14)
+sidebarCorner.Parent = sidebar
+
+--==================================================
+-- TITLE
+--==================================================
 
 local title = Instance.new("TextLabel")
-title.Size = UDim2.new(1, 0, 0, 55)
+title.Size = UDim2.new(1,-20,0,45)
+title.Position = UDim2.fromOffset(10,5)
+
 title.BackgroundTransparency = 1
-title.Text = "💥  LUCK HUB"
-title.TextColor3 = Color3.fromRGB(255, 255, 255)
-title.TextSize = 22
+title.Text = "💥 HUB"
+title.TextColor3 = Color3.fromRGB(255,255,255)
+title.TextSize = 19
 title.Font = Enum.Font.GothamBold
-title.Parent = menu
 
--- =========================================================
--- STATUS
--- =========================================================
+title.Parent = sidebar
 
-local status = Instance.new("TextLabel")
-status.Size = UDim2.new(1, -30, 0, 32)
-status.Position = UDim2.new(0, 15, 0, 50)
+--==================================================
+-- CATEGORY BUTTON
+--==================================================
 
-status.BackgroundTransparency = 1
-status.Text = "Current Luck: 1x"
-status.TextColor3 = Color3.fromRGB(180, 180, 185)
-status.TextSize = 15
-status.Font = Enum.Font.Gotham
-status.Parent = menu
-
--- =========================================================
--- SEPARADOR
--- =========================================================
-
-local function createSection(text, y)
-
-    local section = Instance.new("TextLabel")
-
-    section.Size = UDim2.new(1, -30, 0, 25)
-    section.Position = UDim2.new(0, 15, 0, y)
-
-    section.BackgroundTransparency = 1
-    section.Text = text
-    section.TextColor3 = currentColor
-
-    section.TextSize = 14
-    section.Font = Enum.Font.GothamBold
-    section.TextXAlignment = Enum.TextXAlignment.Left
-
-    section.Parent = menu
-
-    return section
-end
-
-createSection("LUCK", 82)
-
--- =========================================================
--- BOTÃO PADRÃO
--- =========================================================
-
-local function createButton(text, y, callback)
+local function categoryButton(text, y)
 
     local button = Instance.new("TextButton")
 
-    button.Size = UDim2.new(1, -40, 0, 42)
-    button.Position = UDim2.new(0, 20, 0, y)
+    button.Size = UDim2.new(1,-16,0,45)
+    button.Position = UDim2.new(0,8,0,y)
 
-    button.BackgroundColor3 = Color3.fromRGB(27, 27, 34)
+    button.BackgroundColor3 = Color3.fromRGB(27,27,34)
+    button.Text = text
+
+    button.TextColor3 = Color3.fromRGB(210,210,215)
+    button.TextSize = 14
+    button.Font = Enum.Font.GothamBold
+
+    button.AutoButtonColor = false
+    button.Parent = sidebar
+
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0,8)
+    corner.Parent = button
+
+    return button
+end
+
+local luckTab = categoryButton("LUCK",60)
+local configTab = categoryButton("CONFIG",112)
+
+--==================================================
+-- CONTENT CONTAINER
+--==================================================
+
+local content = Instance.new("Frame")
+content.Size = UDim2.new(1,-125,1,-10)
+content.Position = UDim2.new(0,120,0,5)
+
+content.BackgroundTransparency = 1
+content.Parent = main
+
+--==================================================
+-- PAGE CREATOR
+--==================================================
+
+local function createPage()
+
+    local page = Instance.new("ScrollingFrame")
+
+    page.Size = UDim2.fromScale(1,1)
+
+    page.BackgroundTransparency = 1
+    page.BorderSizePixel = 0
+
+    page.ScrollBarThickness = 5
+    page.ScrollBarImageColor3 = currentColor
+
+    page.CanvasSize = UDim2.new(0,0,0,0)
+
+    page.ScrollingDirection = Enum.ScrollingDirection.Y
+
+    page.Visible = false
+    page.Parent = content
+
+    local layout = Instance.new("UIListLayout")
+
+    layout.Padding = UDim.new(0,10)
+    layout.SortOrder = Enum.SortOrder.LayoutOrder
+
+    layout.Parent = page
+
+    local padding = Instance.new("UIPadding")
+
+    padding.PaddingTop = UDim.new(0,8)
+    padding.PaddingBottom = UDim.new(0,12)
+    padding.PaddingLeft = UDim.new(0,8)
+    padding.PaddingRight = UDim.new(0,8)
+
+    padding.Parent = page
+
+    layout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+
+        page.CanvasSize = UDim2.new(
+            0,
+            0,
+            0,
+            layout.AbsoluteContentSize.Y + 20
+        )
+
+    end)
+
+    return page
+end
+
+local luckPage = createPage()
+local configPage = createPage()
+
+--==================================================
+-- PAGE TITLE
+--==================================================
+
+local function pageTitle(parent,text)
+
+    local label = Instance.new("TextLabel")
+
+    label.Size = UDim2.new(1,0,0,38)
+
+    label.BackgroundTransparency = 1
+
+    label.Text = text
+    label.TextColor3 = currentColor
+
+    label.TextSize = 20
+    label.Font = Enum.Font.GothamBold
+
+    label.TextXAlignment = Enum.TextXAlignment.Left
+
+    label.LayoutOrder = 1
+    label.Parent = parent
+
+    return label
+end
+
+local luckTitle = pageTitle(luckPage,"Luck")
+local configTitle = pageTitle(configPage,"Configuração")
+
+--==================================================
+-- BUTTON
+--==================================================
+
+local function createAction(parent,text,callback)
+
+    local button = Instance.new("TextButton")
+
+    button.Size = UDim2.new(1,-5,0,45)
+
+    button.BackgroundColor3 = Color3.fromRGB(26,26,33)
 
     button.Text = text
-    button.TextColor3 = Color3.fromRGB(245, 245, 245)
+    button.TextColor3 = Color3.fromRGB(240,240,240)
 
     button.TextSize = 15
     button.Font = Enum.Font.GothamBold
 
     button.AutoButtonColor = false
-    button.Parent = menu
+
+    button.LayoutOrder = 2
+    button.Parent = parent
 
     local corner = Instance.new("UICorner")
-    corner.CornerRadius = UDim.new(0, 9)
+    corner.CornerRadius = UDim.new(0,9)
     corner.Parent = button
 
     local stroke = Instance.new("UIStroke")
     stroke.Thickness = 1
-    stroke.Color = Color3.fromRGB(65, 65, 75)
+    stroke.Color = Color3.fromRGB(55,55,65)
     stroke.Parent = button
-
-    button.MouseEnter:Connect(function()
-        button.BackgroundColor3 = Color3.fromRGB(38, 38, 48)
-    end)
-
-    button.MouseLeave:Connect(function()
-        button.BackgroundColor3 = Color3.fromRGB(27, 27, 34)
-    end)
 
     button.MouseButton1Click:Connect(callback)
 
     return button
 end
 
--- =========================================================
--- LUCK
--- =========================================================
+--==================================================
+-- STATUS
+--==================================================
 
-createButton("10x Luck", 112, function()
+local status = Instance.new("TextLabel")
+
+status.Size = UDim2.new(1,-5,0,35)
+
+status.BackgroundTransparency = 1
+
+status.Text = "Current Luck: 1x"
+status.TextColor3 = currentColor
+
+status.TextSize = 14
+status.Font = Enum.Font.Gotham
+
+status.TextXAlignment = Enum.TextXAlignment.Left
+
+status.LayoutOrder = 2
+status.Parent = luckPage
+
+--==================================================
+-- LUCK FUNCTIONS
+--==================================================
+
+createAction(luckPage,"10x Luck",function()
 
     status.Text = "Current Luck: 10x"
-    status.TextColor3 = currentColor
 
 end)
 
-createButton("100x Luck", 160, function()
+createAction(luckPage,"100x Luck",function()
 
     status.Text = "Current Luck: 100x"
-    status.TextColor3 = currentColor
 
 end)
 
-createButton("1000x Luck", 208, function()
+createAction(luckPage,"1000x Luck",function()
 
     status.Text = "Current Luck: 1000x"
-    status.TextColor3 = currentColor
 
 end)
 
--- =========================================================
--- CONFIGURAÇÃO
--- =========================================================
+--==================================================
+-- CONFIG FUNCTIONS
+--==================================================
 
-createSection("CONFIGURAÇÃO", 262)
+createAction(configPage,"🟢 Verde",function()
 
--- =========================================================
--- FUNÇÃO PARA ATUALIZAR COR
--- =========================================================
+    rgbEnabled = false
+    currentColor = COLORS.Verde
 
-local function updateColor(color)
+end)
 
-    currentColor = color
+createAction(configPage,"🟡 Amarelo",function()
 
-    logoStroke.Color = color
-    menuStroke.Color = color
+    rgbEnabled = false
+    currentColor = COLORS.Amarelo
 
-    for _, object in ipairs(menu:GetChildren()) do
+end)
 
-        if object:IsA("TextLabel") then
+createAction(configPage,"🔵 Azul",function()
 
-            if object.Text == "LUCK"
-            or object.Text == "CONFIGURAÇÃO" then
+    rgbEnabled = false
+    currentColor = COLORS.Azul
 
-                object.TextColor3 = color
+end)
 
-            elseif object.Text == "Current Luck: 1x"
-            or object.Text == "Current Luck: 10x"
-            or object.Text == "Current Luck: 100x"
-            or object.Text == "Current Luck: 1000x" then
+local rgbButton
 
-                object.TextColor3 = color
+rgbButton = createAction(configPage,"🌈 RGB: OFF",function()
+
+    rgbEnabled = not rgbEnabled
+
+    if rgbEnabled then
+        rgbButton.Text = "🌈 RGB: ON"
+    else
+        rgbButton.Text = "🌈 RGB: OFF"
+    end
+
+end)
+
+--==================================================
+-- PAGE SWITCH
+--==================================================
+
+local function showPage(page)
+
+    luckPage.Visible = false
+    configPage.Visible = false
+
+    page.Visible = true
+
+end
+
+showPage(luckPage)
+
+luckTab.MouseButton1Click:Connect(function()
+
+    showPage(luckPage)
+
+end)
+
+configTab.MouseButton1Click:Connect(function()
+
+    showPage(configPage)
+
+end)
+
+--==================================================
+-- RGB EFFECT
+--==================================================
+
+RunService.RenderStepped:Connect(function(dt)
+
+    if rgbEnabled then
+
+        rgbHue = (rgbHue + dt * 0.25) % 1
+
+        currentColor = Color3.fromHSV(rgbHue,1,1)
+
+    end
+
+    logoStroke.Color = currentColor
+    mainStroke.Color = currentColor
+
+    luckTitle.TextColor3 = currentColor
+    configTitle.TextColor3 = currentColor
+
+    pageTitle(luckPage,"Luck")
+
+    luckPage.ScrollBarImageColor3 = currentColor
+    configPage.ScrollBarImageColor3 = currentColor
+
+end)
+
+--==================================================
+-- ABRIR / FECHAR
+--==================================================
+
+logo.MouseButton1Click:Connect(function()
+
+    main.Visible = not main.Visible
+
+end)
+
+--==================================================
+-- DRAG SYSTEM
+--==================================================
+-- Sistema refeito para usar o deslocamento absoluto
+-- do input e evitar o "pulo" inicial.
+
+local function makeDraggable(object, handle)
+
+    local dragging = false
+    local dragInput
+
+    local startInputPosition
+    local startObjectPosition
+
+    handle.InputBegan:Connect(function(input)
+
+        if input.UserInputType == Enum.UserInputType.MouseButton1
+        or input.UserInputType == Enum.UserInputType.Touch then
+
+            dragging = true
+
+            startInputPosition = input.Position
+            startObjectPosition = object.Position
+
+            input.Changed:Connect(function()
+
+                if input.UserInputState == Enum.UserInputState.End then
+
+                    dragging = false
+
+                end
+
+            end)
+
+        end
+
+    end)
+
+    handle.InputChanged:Connect(function(input)
+
+        if input.UserInputType == Enum.UserInputType.MouseMovement
+        or input.UserInputType == Enum.UserInputType.Touch then
+
+            dragInput = input
+
+        end
+
+    end)
+
+    UIS.InputChanged:Connect(function(input)
+
+        if input ~= dragInput or not dragging then
+            return
+        end
+
+        local delta = input.Position - startInputPosition
+
+        object.Position = UDim2.new(
+
+            startObjectPosition.X.Scale,
+            startObjectPosition.X.Offset + delta.X,
+
+            startObjectPosition.Y.Scale,
+            startObjectPosition.Y.Offset + delta.Y
+
+        )
+
+    end)
+
+end
+
+-- Logo pode ser movida segurando nela
+makeDraggable(logo,logo)
+
+-- Menu pode ser movido segurando o título da sidebar
+makeDraggable(main,sidebar)
+
+--==================================================
+-- APLICAÇÃO DA COR NOS BOTÕES
+--==================================================
+
+RunService.RenderStepped:Connect(function()
+
+    for _,obj in ipairs(sidebar:GetChildren()) do
+
+        if obj:IsA("TextButton") then
+
+            if obj == luckTab or obj == configTab then
+
+                obj.TextColor3 = Color3.fromRGB(220,220,225)
 
             end
 
         end
-
-    end
-
-end
-
--- =========================================================
--- CORES
--- =========================================================
-
-createButton("🟢  Verde", 290, function()
-
-    updateColor(Colors.Verde)
-
-end)
-
-createButton("🟡  Amarelo", 338, function()
-
-    updateColor(Colors.Amarelo)
-
-end)
-
--- =========================================================
--- BOTÃO AZUL
--- =========================================================
-
-local blueButton = createButton("🔵  Azul", 386, function()
-
-    updateColor(Colors.Azul)
-
-end)
-
--- =========================================================
--- NEON
--- =========================================================
-
-local neonButton = createButton("⚡  Neon: OFF", 434, function()
-
-    neonMode = not neonMode
-
-    if neonMode then
-
-        neonButton.Text = "⚡  Neon: ON"
-
-        logoStroke.Thickness = 5
-        menuStroke.Thickness = 3
-
-    else
-
-        neonButton.Text = "⚡  Neon: OFF"
-
-        logoStroke.Thickness = 3
-        menuStroke.Thickness = 2
-
-    end
-
-end)
-
--- =========================================================
--- ABRIR / FECHAR
--- =========================================================
-
-logo.MouseButton1Click:Connect(function()
-
-    menu.Visible = not menu.Visible
-
-end)
-
--- =========================================================
--- ARRASTO SUAVE DA LOGO
--- =========================================================
-
-local draggingLogo = false
-local dragStart
-local targetLogoPosition
-
-local function getMousePosition(input)
-
-    return Vector2.new(
-        input.Position.X,
-        input.Position.Y
-    )
-
-end
-
-logo.InputBegan:Connect(function(input)
-
-    if input.UserInputType == Enum.UserInputType.MouseButton1
-    or input.UserInputType == Enum.UserInputType.Touch then
-
-        draggingLogo = true
-
-        dragStart = getMousePosition(input)
-        targetLogoPosition = logo.Position
-
-    end
-
-end)
-
-logo.InputEnded:Connect(function(input)
-
-    if input.UserInputType == Enum.UserInputType.MouseButton1
-    or input.UserInputType == Enum.UserInputType.Touch then
-
-        draggingLogo = false
-
-    end
-
-end)
-
-UIS.InputChanged:Connect(function(input)
-
-    if not draggingLogo then
-        return
-    end
-
-    if input.UserInputType ~= Enum.UserInputType.MouseMovement
-    and input.UserInputType ~= Enum.UserInputType.Touch then
-        return
-    end
-
-    local current = getMousePosition(input)
-    local delta = current - dragStart
-
-    targetLogoPosition = UDim2.new(
-        targetLogoPosition.X.Scale,
-        targetLogoPosition.X.Offset + delta.X,
-        targetLogoPosition.Y.Scale,
-        targetLogoPosition.Y.Offset + delta.Y
-    )
-
-    dragStart = current
-
-end)
-
--- =========================================================
--- MOVIMENTO SUAVE
--- =========================================================
-
-RunService.RenderStepped:Connect(function()
-
-    if targetLogoPosition then
-
-        local current = logo.Position
-
-        logo.Position = UDim2.new(
-            current.X.Scale,
-            current.X.Offset + (targetLogoPosition.X.Offset - current.X.Offset) * 0.25,
-
-            current.Y.Scale,
-            current.Y.Offset + (targetLogoPosition.Y.Offset - current.Y.Offset) * 0.25
-        )
-
-    end
-
-end)
-
--- =========================================================
--- ARRASTO SUAVE DO MENU PELO TÍTULO
--- =========================================================
-
-local draggingMenu = false
-local menuDragStart
-local targetMenuPosition
-
-title.InputBegan:Connect(function(input)
-
-    if input.UserInputType == Enum.UserInputType.MouseButton1
-    or input.UserInputType == Enum.UserInputType.Touch then
-
-        draggingMenu = true
-
-        menuDragStart = getMousePosition(input)
-        targetMenuPosition = menu.Position
-
-    end
-
-end)
-
-title.InputEnded:Connect(function(input)
-
-    if input.UserInputType == Enum.UserInputType.MouseButton1
-    or input.UserInputType == Enum.UserInputType.Touch then
-
-        draggingMenu = false
-
-    end
-
-end)
-
-UIS.InputChanged:Connect(function(input)
-
-    if not draggingMenu then
-        return
-    end
-
-    if input.UserInputType ~= Enum.UserInputType.MouseMovement
-    and input.UserInputType ~= Enum.UserInputType.Touch then
-        return
-    end
-
-    local current = getMousePosition(input)
-    local delta = current - menuDragStart
-
-    targetMenuPosition = UDim2.new(
-        targetMenuPosition.X.Scale,
-        targetMenuPosition.X.Offset + delta.X,
-
-        targetMenuPosition.Y.Scale,
-        targetMenuPosition.Y.Offset + delta.Y
-    )
-
-    menuDragStart = current
-
-end)
-
-RunService.RenderStepped:Connect(function()
-
-    if targetMenuPosition then
-
-        local current = menu.Position
-
-        menu.Position = UDim2.new(
-            current.X.Scale,
-            current.X.Offset + (targetMenuPosition.X.Offset - current.X.Offset) * 0.25,
-
-            current.Y.Scale,
-            current.Y.Offset + (targetMenuPosition.Y.Offset - current.Y.Offset) * 0.25
-        )
 
     end
 
